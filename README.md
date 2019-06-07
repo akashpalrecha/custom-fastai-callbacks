@@ -6,6 +6,28 @@ I'm still learning and will keep updating this repo as I create more callbacks.
 <hr>
 
 ```
+class GradientAccumulator(LearnerCallback):
+    """
+    :param num_iterations: Accumulate gradients over `num_iterations` iterations before 
+                           performing an optimizer step
+    :param disable_callback : set to True to disable callback functionality
+
+    Accumulates gradients over N iterations before performing an optimizer step.
+    This is useful when training models where it isn't possible to increase batch size above 1 or 2
+    Accumulating gradients solves the issue of unstable gradients during training
+    
+    Usage:
+    accumulator = partial(GradientAccumulator, num_iterations=4)
+    learn = create_cnn(data, models.resnet18, callback_fns = [accumulator])
+
+    # To change number of iterations:
+    learn.gradient_accumulator.num_iterations = new_value
+
+    # To disable callback functionality:
+    learn.gradient_accumulator.disable_callback = True
+    """
+```
+```
 class SaveEveryNIterations(LearnerCallback):
     """
     :param num_iterations: Saves model after every `num_iterations` iterations

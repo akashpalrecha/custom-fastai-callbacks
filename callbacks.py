@@ -105,3 +105,66 @@ class StopAfterNIterations(LearnerCallback):
     @disable_callback.setter
     def disable_callback(self, new_val):
         self.disable_callback = new_val
+
+
+class GradientAccumulator(LearnerCallback):
+    """
+    :param num_iterations: Accumulate gradients over `num_iterations` iterations before backpropagating
+    :param disable_callback : set to True to disable callback functionality
+
+    Accumulates gradients over N iterations
+    This is useful when training models where it isn't possible to increase batch size above 1 or 2
+    Accumulating gradients solves the issue of unstable gradients
+    Usage:
+    accumulator = partial(GradientAccumulator, num_iterations=100)
+    learn = create_cnn(data, models.resnet18, callback_fns = [accumulator])
+
+    # To change number of iterations:
+    learn.stop_after_n_iterations.num_iterations = new_value
+
+    # To disable callback functionality:
+    learn.stop_after_n_iterations.disable_callback = True
+    """
+    def __init__(self, learn: Learner, num_iterations: int = 4, disable_callback: bool = False):
+        super().__init__(learn)
+        self._num_iterations = num_iterations
+        self._disable_callback = disable_callback
+        self.skipped_last_backprop = False
+
+    def on_backward_end(self, iteration, **kwargs) -> None:
+        if self._disable_callback: return False
+        if (iteration % self._num_iterations != 0) or (iteration == 0):
+            self.skipped_last_backprop = True
+            return {'skip_step': True, 'skip_zero': True}
+        else:
+            self.skipped_last_backprop = False
+            return False
+
+    def on_step_end(self, **kwargs):
+        if self.skipped_last_backprop:
+            return {'skip_zero': True}
+        else:
+            return False
+
+    def on_epoch_end(self, **kwargs) ->bool:
+        """Deals with the edge case of an epoch ending"""
+        if self.skipped_last_backprop:
+            self.learn.opt.step()
+            self.learn.opt.zero_grad()
+
+
+    @property
+    def num_iterations(self):
+        return self._num_iterations
+
+    @property
+    def disable_callback(self):
+        return self._disable_callback
+
+    @num_iterations.setter
+    def num_iterations(self, new_val):
+        self.num_iterations = new_val
+
+    @disable_callback.setter
+    def disable_callback(self, new_val):
+        self.disable_callback = new_val
