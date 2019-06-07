@@ -26,18 +26,33 @@ class SaveEveryNIterations(LearnerCallback):
     """
     def __init__(self, learn: Learner, num_iterations: int = 100, save_name=None, disable_callback:bool=False):
         super().__init__(learn)
-        self.num_iterations = num_iterations
+        self._num_iterations = num_iterations
         self.save_name = save_name
-        self.disable_callback = disable_callback
+        self._disable_callback = disable_callback
         if save_name is None:
-            self.save_name = f'saved_every_{self.num_iterations}_iterations'
+            self.save_name = f'saved_every_{self._num_iterations}_iterations'
 
     def on_batch_end(self, iteration, **kwargs) -> None:
-        if self.disable_callback: return False
-        if iteration % self.num_iterations == 0 and iteration != 0:
+        if self._disable_callback: return False
+        if iteration % self._num_iterations == 0 and iteration != 0:
             self.learn.save(name=self.save_name)
             print(f"Model saved as {self.save_name} | Iteration : {iteration}")
 
+    @property
+    def num_iterations(self):
+        return self._num_iterations
+
+    @property
+    def disable_callback(self):
+        return self._disable_callback
+
+    @num_iterations.setter
+    def num_iterations(self, new_val):
+        self.num_iterations = new_val
+
+    @disable_callback.setter
+    def disable_callback(self, new_val):
+        self.disable_callback = new_val
 
 class StopAfterNIterations(LearnerCallback):
     """
@@ -58,19 +73,35 @@ class StopAfterNIterations(LearnerCallback):
     """
     def __init__(self, learn: Learner, num_iterations:int=100, disable_callback:bool=False):
         super().__init__(learn)
-        self.num_iterations = num_iterations
+        self._num_iterations = num_iterations
         self.stop_training = False
-        self.disable_callback = disable_callback
+        self._disable_callback = disable_callback
 
     def on_batch_end(self, iteration, **kwargs) -> None:
-        if self.disable_callback: return False
-        if iteration == self.num_iterations:
+        if self._disable_callback: return False
+        if iteration == self._num_iterations:
             print(f"Iteration {iteration} reached. Stopping Training")
             self.stop_training = True
             return {'stop_training': self.stop_training}
 
     def on_epoch_end(self, **kwargs) ->bool:
-        if self.disable_callback: return False
+        if self._disable_callback: return False
         if self.stop_training:
             print('Run learn.validate(learn.data.valid_dl) to see results')
             return {'stop_training': self.stop_training}
+
+    @property
+    def num_iterations(self):
+        return self._num_iterations
+
+    @property
+    def disable_callback(self):
+        return self._disable_callback
+
+    @num_iterations.setter
+    def num_iterations(self, new_val):
+        self.num_iterations = new_val
+
+    @disable_callback.setter
+    def disable_callback(self, new_val):
+        self.disable_callback = new_val

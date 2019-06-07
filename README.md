@@ -23,10 +23,10 @@ class SaveEveryNIterations(LearnerCallback):
     learn = create_cnn(data, models.resnet18, callback_fns = [saver_callback])
     
     # To change number of iterations:
-    learn.stop_after_n_iterations.num_iterations = new_value
+    learn.save_every_n_iterations.num_iterations = new_value
     
     # To disable callback functionality:
-    learn.stop_after_n_iterations.disable_callback = True
+    learn.save_every_n_iterations.disable_callback = True
 ```
 ```
 class StopAfterNIterations(LearnerCallback):
