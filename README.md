@@ -22,3 +22,16 @@ class SaveEveryNIterations(LearnerCallback):
     learn = create_cnn(data, models.resnet18, callback_fns = [saver_callback])
     """
 ```
+```
+class StopAfterNIterations(LearnerCallback):
+    """
+    :param num_iterations: Saves model after every `num_iterations` iterations
+    
+    Stops model after N iterations
+    This is useful when training models that take hours to train for just 1 epoch
+    
+    Usage:
+    stopper = partial(StopAfterNIterations, num_iterations = 17)
+    learn = create_cnn(data, models.resnet18, callback_fns = [stopper])
+    """
+```
