@@ -2,6 +2,7 @@ from fastai import LearnerCallback
 from fastai import Learner
 from fastai import Any
 
+
 class SaveEveryNIterations(LearnerCallback):
     """
     :param num_iterations: Saves model after every `num_iterations` iterations
@@ -53,6 +54,7 @@ class SaveEveryNIterations(LearnerCallback):
     @disable_callback.setter
     def disable_callback(self, new_val):
         self.disable_callback = new_val
+
 
 class StopAfterNIterations(LearnerCallback):
     """
