@@ -4,12 +4,7 @@ from fastai import Any
 
 
 class SaveEveryNIterations(LearnerCallback):
-    """
-    :param num_iterations: Saves model after every `num_iterations` iterations
-    :param save_name: [optional] Filename to save model with
-    :param disable_callback : set to True to disable callback functionality
-
-    Saves model after every N iterations
+    """Saves model after every N iterations
     This is useful when training models that take hours to train for just 1 epoch
     We save all models with the same name as otherwise rather heavy models can quickly gobble up
     all available disk space.
@@ -26,6 +21,11 @@ class SaveEveryNIterations(LearnerCallback):
     learn.stop_after_n_iterations.disable_callback = True
     """
     def __init__(self, learn: Learner, num_iterations: int = 100, save_name=None, disable_callback:bool=False):
+        """
+        :param num_iterations: Saves model after every `num_iterations` iterations
+        :param save_name: [optional] Filename to save model with
+        :param disable_callback : set to True to disable callback functionality
+        """
         super().__init__(learn)
         self._num_iterations = num_iterations
         self.save_name = save_name
@@ -57,11 +57,7 @@ class SaveEveryNIterations(LearnerCallback):
 
 
 class StopAfterNIterations(LearnerCallback):
-    """
-    :param num_iterations: Saves model after every `num_iterations` iterations
-    :param disable_callback : set to True to disable callback functionality
-
-    Stops model after N iterations
+    """Stops model after N iterations.
     This is useful when training models that take hours to train for just 1 epoch
 
     Usage:
@@ -74,6 +70,10 @@ class StopAfterNIterations(LearnerCallback):
     learn.stop_after_n_iterations.disable_callback = True
     """
     def __init__(self, learn: Learner, num_iterations:int=100, disable_callback:bool=False):
+        """
+        :param num_iterations: Stops model after every `num_iterations` iterations
+        :param disable_callback : set to True to disable callback functionality
+        """
         super().__init__(learn)
         self._num_iterations = num_iterations
         self.stop_training = False
@@ -110,11 +110,7 @@ class StopAfterNIterations(LearnerCallback):
 
 
 class GradientAccumulator(LearnerCallback):
-    """
-    :param num_iterations: Accumulate gradients over `num_iterations` iterations before backpropagating
-    :param disable_callback : set to True to disable callback functionality
-
-    Accumulates gradients over N iterations
+    """Accumulates gradients over N iterations
     This is useful when training models where it isn't possible to increase batch size above 1 or 2
     Accumulating gradients solves the issue of unstable gradients
     Usage:
@@ -128,6 +124,10 @@ class GradientAccumulator(LearnerCallback):
     learn.stop_after_n_iterations.disable_callback = True
     """
     def __init__(self, learn: Learner, num_iterations: int = 4, disable_callback: bool = False):
+        """
+        :param num_iterations: Accumulate gradients over `num_iterations` iterations before taking an optimizer step
+        :param disable_callback : set to True to disable callback functionality
+        """
         super().__init__(learn)
         self._num_iterations = num_iterations
         self._disable_callback = disable_callback
