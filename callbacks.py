@@ -1,7 +1,5 @@
-from fastai import LearnerCallback
-from fastai import Learner
-from fastai import Any
-
+from fastai.basic_train import LearnerCallback
+from fastai.basic_train import Learner
 
 class SaveEveryNIterations(LearnerCallback):
     """Saves model after every N iterations
