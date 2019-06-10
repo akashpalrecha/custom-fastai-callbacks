@@ -3,12 +3,11 @@ from fastai.basic_train import Learner
 
 class SaveEveryNIterations(LearnerCallback):
     """Saves model after every N iterations
-    This is useful when training models that take hours to train for just 1 epoch
     We save all models with the same name as otherwise rather heavy models can quickly gobble up
     all available disk space.
 
     Usage:
-    saver_callback = saver_callback = partial(SaveEveryNIterations, num_iterations=100,
+    saver_callback = partial(SaveEveryNIterations, num_iterations=100,
                                               save_name="saved_every_100_iterations")
     learn = create_cnn(data, models.resnet18, callback_fns = [saver_callback])
     """
@@ -32,8 +31,6 @@ class SaveEveryNIterations(LearnerCallback):
 
 class StopAfterNIterations(LearnerCallback):
     """Stops model after N iterations.
-    This is useful when training models that take hours to train for just 1 epoch
-
     Usage:
     stopper = partial(StopAfterNIterations, num_iterations = 17)
     learn = create_cnn(data, models.resnet18, callback_fns = [stopper])
@@ -60,8 +57,6 @@ class StopAfterNIterations(LearnerCallback):
 
 class GradientAccumulator(LearnerCallback):
     """Accumulates gradients over N iterations
-    This is useful when training models where it isn't possible to increase batch size above 1 or 2
-    Accumulating gradients solves the issue of unstable gradients
     Usage:
     accumulator = partial(GradientAccumulator, num_iterations=100)
     learn = create_cnn(data, models.resnet18, callback_fns = [accumulator])
@@ -93,3 +88,23 @@ class GradientAccumulator(LearnerCallback):
         if self.skipped_last_backprop:
             self.learn.opt.step()
             self.learn.opt.zero_grad()
+
+
+class ShowResutsEveryNIterations(LearnerCallback):
+    """Shows model results after every N iterations
+
+    Usage:
+    results_callback = partial(SaveEveryNIterations, num_iterations=100)
+    learn = create_cnn(data, models.resnet18, callback_fns = [results_callback])
+    """
+    def __init__(self, learn: Learner, num_iterations: int = 100, save_name=None, disable_callback:bool=False):
+        """
+        :param num_iterations: Show model resuts after every `num_iterations` iterations
+        """
+        super().__init__(learn)
+        self.num_iterations = num_iterations
+
+    def on_batch_end(self, iteration, **kwargs) -> None:
+        if iteration % self.num_iterations == 0 and iteration != 0:
+            self.learn.show_results()
+            self.learn.model.train()
