@@ -111,10 +111,10 @@ class ShowResutsEveryNIterations(LearnerCallback):
 
 
 class SkipNIterations(LearnerCallback):
-    """Skips first N batches.
+    """Skips first N iterations while training.
     Usage:
-    starter = partial(StartAfterNIterations, num_batches = 17)
-    learn = create_cnn(data, models.resnet18, callback_fns = [starter])
+    skipper = partial(SkipNIterations, num_iterations = 20)
+    learn = create_cnn(data, models.resnet18, callback_fns = [skipper])
     """
     def __init__(self, learn: Learner, num_iterations:int=100, disable_callback:bool=False):
         """
@@ -129,7 +129,7 @@ class SkipNIterations(LearnerCallback):
         if self.skip_epochs > 0:
             self.num_iterations = self.num_iterations % self.epoch_len
 
-    def faux_model(self, *args, **kwargs):
+    def faux_model(self, *args, **kwargs): # Replacement for Model
         if hasattr(self, 'output'):
             return self.output
 
@@ -161,4 +161,4 @@ class SkipNIterations(LearnerCallback):
         if num_batch <= self.num_iterations - 1:
             return {'skip_step': True, 'skip_validate': True}
         else:
-            return {'skip_validate':False}
+            return {'skip_validate':False} # Make sure we validate in the end
