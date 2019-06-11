@@ -108,3 +108,57 @@ class ShowResutsEveryNIterations(LearnerCallback):
         if iteration % self.num_iterations == 0 and iteration != 0:
             self.learn.show_results()
             self.learn.model.train()
+
+
+class SkipNIterations(LearnerCallback):
+    """Skips first N iterations while training.
+    Usage:
+    skipper = partial(SkipNIterations, num_iterations = 20)
+    learn = create_cnn(data, models.resnet18, callback_fns = [skipper])
+    """
+    def __init__(self, learn: Learner, num_iterations:int=100, disable_callback:bool=False):
+        """
+        :param num_batches: number of batches to skip in the beginning of training
+        """
+        super().__init__(learn)
+        _order = 1
+        self.num_iterations = num_iterations
+        self.epoch_len = len(self.learn.data.train_dl)
+        self.skip_epochs = self.num_iterations // self.epoch_len
+        self.model = self.learn.model
+        if self.skip_epochs > 0:
+            self.num_iterations = self.num_iterations % self.epoch_len
+
+    def faux_model(self, *args, **kwargs): # Replacement for Model
+        if hasattr(self, 'output'):
+            return self.output
+
+    def on_batch_begin(self, epoch, **kwargs):
+        if epoch <= self.skip_epochs - 1:
+            return {'stop_epoch': True}
+
+    def on_batch_end(self, num_batch:int, last_output, epoch, **kwargs):
+        # We replace the model with a bogus function that returns the same output each time
+        if num_batch == 1:
+            self.output = last_output
+            self.learn.model = self.faux_model
+        if epoch <= self.skip_epochs - 1:
+            return {'stop_epoch': True}
+        if num_batch <= self.num_iterations - 1:
+            return {'skip_validate': True}
+        else:
+            self.learn.model = self.model
+
+    def on_backward_begin(self, num_batch:int, **kwargs):
+        if num_batch <= self.num_iterations - 1:
+            return {'skip_bwd': True}
+
+    def on_backward_end(self, num_batch:int, **kwargs):
+        if num_batch <= self.num_iterations - 1:
+            return {'skip_step': True}
+
+    def on_step_end(self, num_batch:int, **kwargs):
+        if num_batch <= self.num_iterations - 1:
+            return {'skip_step': True, 'skip_validate': True}
+        else:
+            return {'skip_validate':False} # Make sure we validate in the end
