@@ -46,3 +46,12 @@ I'm still and always learning and welcome any changes and feedback to my project
     results_callback = partial(ShowResutsEveryNIterations, num_iterations=100)
     learn = create_cnn(data, models.resnet18, callback_fns = [results_callback])
 ```
+
+5. **SkipNBatches**: Skips training for first N iterations<br>
+    Usage:
+    
+```python
+    from callbacks import ShowResutsEveryNIterations
+    results_callback = partial(ShowResutsEveryNIterations, num_iterations=100)
+    learn = create_cnn(data, models.resnet18, callback_fns = [results_callback])
+```
