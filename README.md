@@ -3,7 +3,7 @@ Custom Callbacks to extend the Fastai library's functionality <br>
 (**Feel free to contribute to this project in whatever ways you like !!**)
 <hr>
 This package contains generalized callbacks that be used by anyone using the fastai library (V1).<br>
-Currently there are 3 callbacks here that I found useful when training models over huge datasets or when the 
+Currently there are 5 callbacks here that I found useful when training models over huge datasets or when the 
 models are too big to increase the batch size over a small number.
 I plan to keep adding callbacks to this repository as and when I make them for my own use. 
 I'm still and always learning and welcome any changes and feedback to my project.
