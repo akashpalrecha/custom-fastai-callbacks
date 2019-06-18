@@ -77,13 +77,10 @@ class GradientAccumulator(LearnerCallback):
             return {'skip_step': True, 'skip_zero': True}
         else:
             self.skipped_last_backprop = False
-            return False
 
     def on_step_end(self, **kwargs):
         if self.skipped_last_backprop:
             return {'skip_zero': True}
-        else:
-            return False
 
     def on_epoch_end(self, **kwargs) ->bool:
         """Deals with the edge case of an epoch ending"""
