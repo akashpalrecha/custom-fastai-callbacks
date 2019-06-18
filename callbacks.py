@@ -25,6 +25,8 @@ class SaveEveryNIterations(LearnerCallback):
     def on_batch_end(self, iteration, **kwargs) -> None:
         if iteration % self.num_iterations == 0 and iteration != 0:
             #TODO : Report to Fastai : param names are different for saving model in language_model_learner
+            if type(learn.model) == type(lambda x: x): # Checking if model is a function (changed by SkipNIterations0
+                return
             self.learn.save(self.save_name)
             print(f"Model saved as {self.save_name} | Iteration : {iteration}")
 
